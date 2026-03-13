@@ -1,0 +1,14 @@
+{
+  "name": "com.ka.unityutils",
+  "version": "1.0.0",
+  "displayName": "Unity Utils",
+  "description": "A collection of utility scripts for Unity.",
+  "unity": "2022.3",
+  "author": {
+    "name": "Anh Nguyen",
+    "email": "nkanh.pr@gmail.com"
+  },
+  "dependencies": {
+    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask"
+  }
+}
