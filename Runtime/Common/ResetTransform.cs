@@ -5,6 +5,7 @@ namespace UnityUtils
 {
     public class ResetTransform : MonoBehaviour
     {
+        [SerializeField] private bool disableOnAwake = true;
         private void Awake()
         {
             // Set the canvas element's position to zero
@@ -15,6 +16,11 @@ namespace UnityUtils
             else
             {
                 transform.position = transform.position.With(x: 0, y: 0);
+            }
+
+            if (disableOnAwake)
+            {
+                gameObject.SetActive(false);
             }
         }
 
