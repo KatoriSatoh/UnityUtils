@@ -24,24 +24,35 @@ namespace UnityUtils
             }
         }
 
+        private Camera GetUICamera()
+        {
+            var canvas = GetComponentInParent<Canvas>();
+            if (canvas != null)
+            {
+                var rootCanvas = canvas.rootCanvas;
+                if (rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay && rootCanvas.worldCamera != null)
+                    return rootCanvas.worldCamera;
+            }
+            return Camera.main;
+        }
+
         private void OnDrawGizmos()
         {
             // Draw the camera aspect in Gizmos
-            Camera camera = Camera.main;
-            if (camera != null)
-            {
-                Gizmos.color = Color.green;
-                float aspect = camera.aspect;
-                float camHeight = camera.orthographicSize * 2;
-                float camWidth = camHeight * aspect;
-                Gizmos.DrawWireCube(transform.position, new Vector3(camWidth, camHeight, 0));
+            Camera camera = GetUICamera();
+            if (camera == null) return;
+            
+            Gizmos.color = Color.green;
+            float aspect = camera.aspect;
+            float camHeight = camera.orthographicSize * 2;
+            float camWidth = camHeight * aspect;
+            Gizmos.DrawWireCube(transform.position, new Vector3(camWidth, camHeight, 0));
 
 #if UNITY_EDITOR
-                // Calculate top right position in world space
-                Vector3 topRight = transform.position + new Vector3(-camWidth / 2 + .2f, camHeight / 2 - .5f, 0);
-                Handles.Label(topRight, name);
+            // Calculate top right position in world space
+            Vector3 topRight = transform.position + new Vector3(-camWidth / 2 + .2f, camHeight / 2 - .5f, 0);
+            Handles.Label(topRight, name);
 #endif
-            }
         }
     }
 }
