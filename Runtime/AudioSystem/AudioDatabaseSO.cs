@@ -83,26 +83,69 @@ namespace UnityUtils
         {
             string soFolder = Path.GetDirectoryName(AssetDatabase.GetAssetPath(this));
             string filePath = Path.Combine(soFolder, fileName + ".cs");
+            string nameSpace = ResolveNamespace(soFolder);
 
             StringBuilder enumBuilder = new();
-            enumBuilder.AppendLine($"public enum {fileName}");
-            enumBuilder.AppendLine("{");
+            string indent = string.Empty;
+            if (!string.IsNullOrEmpty(nameSpace))
+            {
+                enumBuilder.AppendLine($"namespace {nameSpace}");
+                enumBuilder.AppendLine("{");
+                indent = "    ";
+            }
+
+            enumBuilder.AppendLine($"{indent}public enum {fileName}");
+            enumBuilder.AppendLine($"{indent}{{");
 
             foreach (var audioData in audioDatas)
             {
                 if (audioData.clip != null)
                 {
                     string enumEntry = audioData.clip.name.ToEnumEntry();
-                    enumBuilder.AppendLine($"    {enumEntry},");
+                    enumBuilder.AppendLine($"{indent}    {enumEntry},");
                 }
             }
 
-            enumBuilder.AppendLine("}");
+            enumBuilder.AppendLine($"{indent}}}");
+
+            if (!string.IsNullOrEmpty(nameSpace))
+            {
+                enumBuilder.AppendLine("}");
+            }
 
             File.WriteAllText(filePath, enumBuilder.ToString());
             AssetDatabase.Refresh();
 
             Logger.LogSuccess<AudioDatabaseSO>("Audio enum generated at: {0}", filePath);
+        }
+
+        /// <summary>
+        /// Resolves the namespace the generated file should live in, using the root namespace of the
+        /// closest assembly definition above <paramref name="folder"/>, then the project wide one.
+        /// </summary>
+        private static string ResolveNamespace(string folder)
+        {
+            var directory = folder?.Replace('\\', '/');
+            while (!string.IsNullOrEmpty(directory) && directory.StartsWith("Assets"))
+            {
+                var asmdef = Directory.GetFiles(directory, "*.asmdef", SearchOption.TopDirectoryOnly).FirstOrDefault();
+                if (asmdef != null)
+                {
+                    var definition = JsonUtility.FromJson<AssemblyDefinition>(File.ReadAllText(asmdef));
+                    return string.IsNullOrEmpty(definition.rootNamespace) ? definition.name : definition.rootNamespace;
+                }
+
+                directory = Path.GetDirectoryName(directory)?.Replace('\\', '/');
+            }
+
+            return EditorSettings.projectGenerationRootNamespace;
+        }
+
+        [System.Serializable]
+        private class AssemblyDefinition
+        {
+            public string name;
+            public string rootNamespace;
         }
 
 #endif
