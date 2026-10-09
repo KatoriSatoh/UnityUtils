@@ -98,7 +98,7 @@ namespace UnityUtils
 
             enumBuilder.AppendLine($"{indent}public enum {fileName}");
             enumBuilder.AppendLine($"{indent}{{");
-            enumBuilder.AppendLine($"{indent}    {NoneEntry} = -1,");
+            enumBuilder.AppendLine($"{indent}    {NoneEntry},");
 
             foreach (var audioData in audioDatas)
             {
