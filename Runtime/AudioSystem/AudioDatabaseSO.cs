@@ -20,6 +20,8 @@ namespace UnityUtils
 
 #if UNITY_EDITOR
 
+        private const string NoneEntry = "None";
+
         [Button("Auto Import")]
         private void Reset()
         {
@@ -96,12 +98,14 @@ namespace UnityUtils
 
             enumBuilder.AppendLine($"{indent}public enum {fileName}");
             enumBuilder.AppendLine($"{indent}{{");
+            enumBuilder.AppendLine($"{indent}    {NoneEntry},");
 
             foreach (var audioData in audioDatas)
             {
                 if (audioData.clip != null)
                 {
                     string enumEntry = audioData.clip.name.ToEnumEntry();
+                    if (enumEntry == NoneEntry) continue;
                     enumBuilder.AppendLine($"{indent}    {enumEntry},");
                 }
             }
