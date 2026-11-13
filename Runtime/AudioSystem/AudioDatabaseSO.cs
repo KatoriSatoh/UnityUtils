@@ -55,15 +55,16 @@ namespace UnityUtils
                     continue;
                 }
 
+                bool isBGM = name.StartsWith(AudioDefaultGroup.BGM.ToString(), System.StringComparison.OrdinalIgnoreCase);
                 audioDatas.Add(new AudioData
                 {
                     clip = audioClip,
                     id = id,
                     name = name,
-                    group = name.StartsWith(AudioDefaultGroup.BGM.ToString()) ?
+                    group = isBGM ?
                             audioMixer.FindMatchingGroups(AudioDefaultGroup.BGM.ToString())[0] :
                             audioMixer.FindMatchingGroups(AudioDefaultGroup.SFX.ToString())[0],
-                    loop = name.StartsWith(AudioDefaultGroup.BGM.ToString()),
+                    loop = isBGM,
                 });
             }
 
